@@ -1,11 +1,13 @@
 
 export type Person = {name: string, active?: boolean}
-export type ListItems = Person[]
+export type PersonList = Person[]
 
 export type ListboxContext = {
-    updateItems: (changedPosition: number) => void,
-    curpos: number,
-    set_litem: (li: HTMLButtonElement, i: number) => void
+    select_position: (changedPosition: number) => void,
+    curpos: number | null,
+    set_litem: (li: HTMLButtonElement, i: number) => void,
+    length: number,
+    log(): void
 }
 
 export type LitemUseProps = {

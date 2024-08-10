@@ -14,7 +14,7 @@
 		position,
 		onactivate,
 		children,
-		active = $bindable()
+		active = $bindable()    // bound to {item.active}
 	}: Props = $props()
 
 	let dombutton: HTMLButtonElement;
@@ -22,10 +22,10 @@
 
 	function toggle() {
 		if (position === listbox.curpos) return;
-		active = !active
+		active = true
 		if (active && position != null) {
             listbox.curpos = position
-		    listbox.updateItems(position)
+		    listbox.select_position(position)
         }
 	}
 
