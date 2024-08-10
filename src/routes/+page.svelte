@@ -14,7 +14,7 @@
 	let curlist = $state<'teens'|'adults'>('teens')
 	let items: PersonList | undefined = $state()
 
-    const do_switch = (e: Event) => {
+    const swap = (e: Event) => {
 		curlist = curlist === 'teens' ? 'adults' : 'teens'
         listbox.ctx.curpos = null
 	}
@@ -35,7 +35,7 @@
 
 <div class="header">
     <strong>{curlist}</strong>
-    <button type="button" onclick={e => do_switch(e)}>switch</button>
+    <button type="button" onclick={swap}>swap</button>
     <button type="button" onclick={simulate_db_update}>simulate db update</button>
     <button type="button" onclick={e => listbox.ctx.log()}>log</button>
 </div>
