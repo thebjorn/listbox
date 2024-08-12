@@ -1,13 +1,13 @@
 <script lang="ts">
-	import {untrack} from 'svelte'
+	import {untrack, tick} from 'svelte'
 	import Listbox from './Listbox.svelte'
 	import ListItem from './ListItem.svelte'
     import type {Person, PersonList, ListboxContext} from './types.ts'
 
 
 	let names = $state<Record<'teens'|'adults', PersonList>>({
-        teens: 'Timmy Tracy Trevor'.split(' ').map(n => ({name: n, active: false})),
-        adults: 'Andrew Agatha'.split(' ').map(n=> ({name: n, active: false}))
+        teens: 'Timmy Tracy Trevor'.split(' ').map(n => ({name: n})),
+        adults: 'Andrew Agatha'.split(' ').map(n=> ({name: n}))
 	})
 
     let listbox: {ctx: ListboxContext};
@@ -16,7 +16,7 @@
 
     const swap = (e: Event) => {
 		curlist = curlist === 'teens' ? 'adults' : 'teens'
-        listbox.ctx.curpos = null
+        listbox.ctx.select_position(1)
 	}
 
 	$effect(() => {
@@ -29,21 +29,26 @@
 			teens: 'Timmy Tracy Trevor Tina'.split(' ').map(n => ({name: n})),
 			adults: 'Andrew Agatha Anthony'.split(' ').map(n=> ({name: n}))
 		}
-		listbox.ctx.curpos = null
+		tick().then(() => listbox.ctx.select_position(1))
 	}
+
+	let pselected = $state(0)
+	let selected_name = $derived(items && items[pselected].name)
 </script>
 
 <div class="header">
     <strong>{curlist}</strong>
     <button type="button" onclick={swap}>swap</button>
     <button type="button" onclick={simulate_db_update}>simulate db update</button>
+	<button type="button" onclick={e => pselected = 1}>select 1</button>
     <button type="button" onclick={e => listbox.ctx.log()}>log</button>
 </div>
 <input placeholder="before (to check tab-order)">
+<strong>active: {listbox?.ctx.curpos ?? 'null'} / selected_position: {pselected} / {selected_name}</strong>
 
 <Listbox bind:items bind:this={listbox}>
 	{#snippet list_item(item: Person, index: number)}
-		<ListItem bind:active={item.active} 
+		<ListItem bind:group={pselected}
                   position={index} 
                   onactivate={(e: Event) => console.log('hello', item.name)}>
 			{item.name}
@@ -56,6 +61,11 @@
 <pre>{JSON.stringify(names, null, 4)}</pre>
 
 <style>
+	:global(:root) {
+		font-size: 16px;
+		line-height: 1.5;
+		font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+	}
 	:global(:focus-visible, :focus) {
         outline: 5px dotted hotpink;
 		background-color: orange !important;
